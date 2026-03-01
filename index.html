@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIEGSA — Riego que da Resultados</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a2e4a;
+    --blue: #2e6da4;
+    --sky: #4a9fd4;
+    --green: #3a7d44;
+    --green-light: #5aab5e;
+    --cream: #f5f2ec;
+    --white: #ffffff;
+    --gray: #8a9bb0;
+    --dark: #0d1c2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(13,28,46,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(74,159,212,0.15);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .logo-drop {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--navy), var(--blue), var(--green));
+    clip-path: polygon(50% 0%, 85% 35%, 100% 65%, 75% 95%, 25% 95%, 0% 65%, 15% 35%);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text { font-family: 'Playfair Display', serif; font-size: 22px; letter-spacing: 2px; }
+  .logo-text span { color: var(--green-light); }
+
+  .nav-links { display: flex; gap: 36px; }
+  .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 14px; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--sky); }
+
+  .nav-cta {
+    background: var(--green); color: white; border: none; padding: 11px 26px;
+    border-radius: 4px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.5px; transition: all 0.3s;
+  }
+  .nav-cta:hover { background: var(--green-light); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative; overflow: hidden;
+    padding: 120px 60px 80px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(46,109,164,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 80% at 90% 20%, rgba(58,125,68,0.12) 0%, transparent 60%),
+      linear-gradient(160deg, #0d1c2e 0%, #0f2235 50%, #0d2010 100%);
+  }
+
+  /* Animated water lines */
+  .water-lines {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+    overflow: hidden; opacity: 0.08;
+  }
+  .water-line {
+    position: absolute; width: 200%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sky), transparent);
+    animation: flow 8s linear infinite;
+  }
+  .water-line:nth-child(1) { top: 20%; animation-duration: 7s; }
+  .water-line:nth-child(2) { top: 40%; animation-duration: 9s; animation-delay: -3s; opacity: 0.7; }
+  .water-line:nth-child(3) { top: 60%; animation-duration: 6s; animation-delay: -5s; }
+  .water-line:nth-child(4) { top: 80%; animation-duration: 11s; animation-delay: -1s; opacity: 0.5; }
+
+  @keyframes flow {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0%); }
+  }
+
+  /* Field grid decoration */
+  .field-grid {
+    position: absolute; right: -20px; top: 50%; transform: translateY(-50%);
+    width: 55%; height: 80%; opacity: 0.06;
+    background-image: 
+      linear-gradient(var(--green) 1px, transparent 1px),
+      linear-gradient(90deg, var(--green) 1px, transparent 1px);
+    background-size: 40px 40px;
+    border-radius: 4px;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 640px;
+    animation: fadeUp 1s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(74,159,212,0.12); border: 1px solid rgba(74,159,212,0.3);
+    padding: 8px 16px; border-radius: 100px; margin-bottom: 32px;
+    font-size: 13px; font-weight: 500; color: var(--sky); letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sky); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: 1.1;
+    font-weight: 900;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--sky), var(--green-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 18px; line-height: 1.7; color: rgba(255,255,255,0.65);
+    max-width: 500px; margin-bottom: 44px; font-weight: 300;
+  }
+
+  .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: white; border: none; padding: 16px 36px;
+    border-radius: 4px; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    letter-spacing: 0.5px; transition: all 0.3s;
+    box-shadow: 0 8px 30px rgba(58,125,68,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(58,125,68,0.45); }
+
+  .btn-secondary {
+    background: transparent; color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.2); padding: 16px 36px;
+    border-radius: 4px; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.3s;
+  }
+  .btn-secondary:hover { border-color: var(--sky); color: var(--sky); }
+
+  .hero-stats {
+    position: absolute; right: 60px; bottom: 80px; z-index: 2;
+    display: flex; gap: 48px;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px; font-weight: 900;
+    background: linear-gradient(135deg, var(--sky), var(--white));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .stat-label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+
+  .stat-divider { width: 1px; background: rgba(255,255,255,0.1); }
+
+  /* STRIP */
+  .strip {
+    background: linear-gradient(90deg, var(--navy), var(--blue), var(--navy));
+    padding: 20px 60px;
+    display: flex; gap: 48px; overflow: hidden;
+    border-top: 1px solid rgba(74,159,212,0.2);
+    border-bottom: 1px solid rgba(74,159,212,0.2);
+  }
+  .strip-item {
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500;
+    white-space: nowrap;
+  }
+  .strip-icon { color: var(--green-light); font-size: 16px; }
+
+  /* PRODUCTS */
+  .products {
+    padding: 100px 60px;
+    background: linear-gradient(180deg, var(--dark) 0%, #0a1e32 100%);
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--green-light); margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 4vw, 50px); font-weight: 900;
+    line-height: 1.15; max-width: 600px;
+  }
+
+  .section-title span {
+    background: linear-gradient(135deg, var(--sky), var(--green-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 64px; flex-wrap: wrap; gap: 24px;
+  }
+
+  .section-desc { max-width: 380px; color: var(--gray); font-size: 16px; line-height: 1.7; font-weight: 300; }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .product-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px 36px;
+    position: relative; overflow: hidden;
+    transition: all 0.4s;
+    cursor: pointer;
+  }
+
+  .product-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(46,109,164,0.08), rgba(58,125,68,0.08));
+    opacity: 0; transition: opacity 0.4s;
+  }
+
+  .product-card:hover { border-color: rgba(74,159,212,0.3); transform: translateY(-4px); }
+  .product-card:hover::before { opacity: 1; }
+
+  .product-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .product-card:hover::after { transform: scaleX(1); }
+
+  .product-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px; font-weight: 900;
+    color: rgba(255,255,255,0.04);
+    position: absolute; top: 20px; right: 28px;
+    line-height: 1;
+  }
+
+  .product-icon {
+    width: 52px; height: 52px; border-radius: 8px;
+    background: linear-gradient(135deg, rgba(46,109,164,0.2), rgba(58,125,68,0.2));
+    border: 1px solid rgba(74,159,212,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 24px;
+  }
+
+  .product-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 12px; line-height: 1.3;
+  }
+
+  .product-card p {
+    font-size: 14px; color: var(--gray); line-height: 1.65; font-weight: 300;
+  }
+
+  /* WHY US */
+  .why {
+    padding: 100px 60px;
+    background: #060f1a;
+    position: relative; overflow: hidden;
+  }
+
+  .why-bg {
+    position: absolute; left: -100px; top: 50%; transform: translateY(-50%);
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,109,164,0.08) 0%, transparent 70%);
+  }
+
+  .why-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center;
+  }
+
+  .why-content { position: relative; z-index: 2; }
+  .why-content .section-title { margin-bottom: 24px; }
+  .why-content p { color: var(--gray); font-size: 16px; line-height: 1.8; margin-bottom: 40px; font-weight: 300; }
+
+  .features { display: flex; flex-direction: column; gap: 24px; }
+
+  .feature {
+    display: flex; gap: 18px; align-items: flex-start;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px; transition: all 0.3s;
+  }
+  .feature:hover { border-color: rgba(74,159,212,0.2); background: rgba(46,109,164,0.06); }
+
+  .feature-icon {
+    width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+
+  .feature-text h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .feature-text p { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+  .why-visual {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+
+  .why-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px; padding: 32px 24px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .why-card:hover { transform: translateY(-4px); border-color: rgba(74,159,212,0.25); }
+  .why-card:first-child { grid-column: span 2; background: linear-gradient(135deg, rgba(46,109,164,0.1), rgba(58,125,68,0.1)); border-color: rgba(74,159,212,0.15); }
+
+  .why-card-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; font-weight: 900;
+    background: linear-gradient(135deg, var(--sky), var(--green-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .why-card-label { font-size: 14px; color: var(--gray); margin-top: 8px; font-weight: 400; }
+
+  /* CTA BAND */
+  .cta-band {
+    padding: 80px 60px;
+    background: linear-gradient(135deg, var(--navy) 0%, #1a3d2e 100%);
+    border-top: 1px solid rgba(74,159,212,0.2);
+    border-bottom: 1px solid rgba(74,159,212,0.2);
+    text-align: center; position: relative; overflow: hidden;
+  }
+
+  .cta-band::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 100% at 50% 50%, rgba(74,159,212,0.06) 0%, transparent 70%);
+  }
+
+  .cta-band h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3.5vw, 46px); font-weight: 900;
+    position: relative; margin-bottom: 20px;
+  }
+
+  .cta-band p { color: rgba(255,255,255,0.65); font-size: 17px; max-width: 500px; margin: 0 auto 40px; font-weight: 300; }
+
+  .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+  /* FOOTER */
+  footer {
+    background: #040c15;
+    padding: 60px 60px 30px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+    gap: 60px; margin-bottom: 50px;
+  }
+
+  .footer-brand .logo-text { font-size: 26px; margin-bottom: 12px; display: block; }
+  .footer-brand .slogan { font-size: 13px; color: var(--green-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  .footer-brand p { color: var(--gray); font-size: 14px; line-height: 1.7; max-width: 280px; font-weight: 300; }
+
+  .footer-col h4 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--sky); margin-bottom: 20px; }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 12px; }
+  .footer-col ul li a { color: var(--gray); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+  .footer-col ul li a:hover { color: var(--white); }
+
+  .footer-bottom {
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+    color: rgba(255,255,255,0.3); font-size: 13px;
+  }
+
+  .footer-bottom span { color: var(--green-light); }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 120px; }
+    .hero-stats { right: 24px; gap: 24px; }
+    .stat-num { font-size: 28px; }
+    .strip { padding: 16px 24px; }
+    .products { padding: 70px 24px; }
+    .products-grid { grid-template-columns: 1fr; gap: 2px; }
+    .why { padding: 70px 24px; }
+    .why-grid { grid-template-columns: 1fr; gap: 48px; }
+    .cta-band { padding: 60px 24px; }
+    footer { padding: 50px 24px 24px; }
+    .footer-top { grid-template-columns: 1fr; gap: 36px; }
+    .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-drop">💧</div>
+    <div class="logo-text">RIE<span>GSA</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#productos">Productos</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <a href="https://wa.me/593992693605?text=Hola%20RIEGSA%2C%20me%20interesa%20cotizar%20un%20sistema%20de%20riego" target="_blank" style="text-decoration:none;"><button class="nav-cta">Cotizar Ahora</button></a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="field-grid"></div>
+  <div class="water-lines">
+    <div class="water-line"></div>
+    <div class="water-line"></div>
+    <div class="water-line"></div>
+    <div class="water-line"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Especialistas en Riego Agrícola
+    </div>
+    <h1>
+      El agua correcta,<br>
+      en el lugar <em>exacto</em>
+    </h1>
+    <p>Sistemas de riego de alta eficiencia para maximizar tu producción agrícola. Tubería, goteros, válvulas y accesorios de primera calidad.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Solicitar Cotización</button>
+      <button class="btn-secondary" onclick="document.getElementById('productos').scrollIntoView({behavior:'smooth'})">Ver Productos →</button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Calidad garantizada</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">+6</div>
+      <div class="stat-label">Líneas de producto</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Soporte técnico</div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item"><span class="strip-icon">✓</span> Sistemas de riego completos</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Mangueras polietileno</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Tuberías PVC todos los diámetros</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Goteros autocompensados</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Válvulas PVC & hierro</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Accesorios y conectores</div>
+  <div class="strip-item"><span class="strip-icon">✓</span> Asesoría personalizada</div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products" id="productos">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Nuestro Catálogo</div>
+      <h2 class="section-title">Soluciones para cada <span>necesidad agrícola</span></h2>
+    </div>
+    <p class="section-desc">Ofrecemos una línea completa de productos de riego con los más altos estándares de calidad y durabilidad.</p>
+  </div>
+
+  <div class="products-grid">
+    <div class="product-card reveal">
+      <div class="product-num">01</div>
+      <div class="product-icon">🌾</div>
+      <h3>Sistemas de Riego Agrícola</h3>
+      <p>Diseño e instalación de sistemas completos para campo abierto y cultivos protegidos. Maximiza la eficiencia hídrica de tu producción.</p>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-num">02</div>
+      <div class="product-icon">🔵</div>
+      <h3>Mangueras de Polietileno</h3>
+      <p>Alta resistencia UV, presión y temperatura. Flexibles y duraderas para instalaciones de largo plazo en condiciones agrícolas exigentes.</p>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-num">03</div>
+      <div class="product-icon">🔩</div>
+      <h3>Tuberías PVC</h3>
+      <p>Disponibles en múltiples diámetros para cualquier tipo de instalación. Resistentes a la presión y a los agentes químicos del suelo.</p>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-num">04</div>
+      <div class="product-icon">💧</div>
+      <h3>Goteros Regulables y Autocompensados</h3>
+      <p>Precisión milimétrica en la entrega de agua. Modelos regulables y autocompensados para terrenos con desnivel o variaciones de presión.</p>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-num">05</div>
+      <div class="product-icon">🔧</div>
+      <h3>Válvulas PVC y de Hierro</h3>
+      <p>Control total del flujo en tu sistema. Válvulas de bola, compuerta y mariposa en PVC y hierro fundido para todo tipo de instalación.</p>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-num">06</div>
+      <div class="product-icon">⚙️</div>
+      <h3>Accesorios y Conectores PVC</h3>
+      <p>Codos, tees, uniones, reducciones y más. Todo lo que necesitas para completar y mantener tu sistema de riego con materiales de calidad.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="why" id="nosotros">
+  <div class="why-bg"></div>
+  <div class="why-grid">
+    <div class="why-content reveal">
+      <div class="section-label">¿Por qué RIEGSA?</div>
+      <h2 class="section-title">Confianza y <span>experiencia</span> que se notan</h2>
+      <p>En RIEGSA entendemos que el riego es la columna vertebral de cualquier producción agrícola exitosa. Por eso ofrecemos productos, asesoría y respaldo técnico de primer nivel.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-text">
+            <h4>Productos de primera calidad</h4>
+            <p>Trabajamos solo con materiales certificados que cumplen los más altos estándares del sector agrícola.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🤝</div>
+          <div class="feature-text">
+            <h4>Asesoría técnica personalizada</h4>
+            <p>Nuestro equipo te ayuda a diseñar el sistema ideal para tu terreno, cultivo y presupuesto.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📦</div>
+          <div class="feature-text">
+            <h4>Stock permanente</h4>
+            <p>Mantenemos inventario disponible para entregas rápidas y evitar demoras en tus proyectos.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💰</div>
+          <div class="feature-text">
+            <h4>Precios competitivos</h4>
+            <p>La mejor relación calidad-precio del mercado, con opciones para proyectos de cualquier escala.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-visual reveal">
+      <div class="why-card">
+        <div class="why-card-num">+6</div>
+        <div class="why-card-label">Líneas de productos especializados</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-num">100%</div>
+        <div class="why-card-label">Calidad garantizada</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-num">∞</div>
+        <div class="why-card-label">Soporte técnico continuo</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-num">24h</div>
+        <div class="why-card-label">Tiempo de respuesta</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band" id="contacto">
+  <h2>¿Listo para optimizar <em style="font-style:normal;color:#5aab5e;">tu riego?</em></h2>
+  <p>Habla con nuestros especialistas y recibe una cotización personalizada sin compromiso.</p>
+  <div class="cta-actions">
+    <a href="tel:+593992693605" style="text-decoration:none;"><button class="btn-primary" style="font-size:16px;padding:18px 44px;">📞 Llamar Ahora</button></a>
+    <a href="https://wa.me/593992693605?text=Hola%20RIEGSA%2C%20me%20interesa%20cotizar%20un%20sistema%20de%20riego" target="_blank" style="text-decoration:none;"><button class="btn-secondary" style="font-size:16px;padding:18px 44px;">💬 WhatsApp</button></a>
+    <a href="mailto:ventas.riegsa@gmail.com" style="text-decoration:none;"><button class="btn-secondary" style="font-size:16px;padding:18px 44px;">✉️ Enviar Correo</button></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo-text">RIE<span style="color:#5aab5e;">GSA</span></div>
+      <div class="slogan">Riego que da resultados</div>
+      <p>Somos tu aliado estratégico en soluciones de riego agrícola. Calidad, eficiencia y respaldo técnico en cada producto.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Productos</h4>
+      <ul>
+        <li><a href="#">Sistemas de Riego</a></li>
+        <li><a href="#">Mangueras Polietileno</a></li>
+        <li><a href="#">Tuberías PVC</a></li>
+        <li><a href="#">Goteros</a></li>
+        <li><a href="#">Válvulas</a></li>
+        <li><a href="#">Accesorios PVC</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href="tel:+593992693605">📞 +593 99 269 3605</a></li>
+        <li><a href="https://wa.me/593992693605?text=Hola%20RIEGSA%2C%20me%20interesa%20cotizar" target="_blank">💬 WhatsApp</a></li>
+        <li><a href="mailto:ventas.riegsa@gmail.com">✉️ ventas.riegsa@gmail.com</a></li>
+        <li><a href="https://www.google.com/maps/search/Guayaquil,+Ecuador" target="_blank">📍 Guayaquil, Ecuador</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 <span>RIEGSA</span> — Todos los derechos reservados</div>
+    <div>Riego que da resultados</div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
